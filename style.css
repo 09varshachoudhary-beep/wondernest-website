@@ -471,7 +471,7 @@ input:focus, select:focus { border-color: var(--sky); box-shadow: 0 0 0 4px rgba
   .benefit-card { min-height: 100px; }.problem-card { min-height: 220px; }
   .transition-banner { flex-direction: column; text-align: center; gap: 8px; }
   .check-list { grid-template-columns: 1fr; }
-  .product-stage { min-height: 410px; }.activity-box { transform: scale(.75) rotate(-3deg); }.loose-card-one { left: 3%; }.loose-card-two { right: 7%; }
+  .product-stage { min-height: 410px; }.activity-box { transform: scale(.75) rotate(-3deg); }.loose-card-one { left: -2%; }.loose-card-two { right: -2%; }
   .routine-track { grid-template-columns: 1fr 1fr; }
   .age-grid { gap: 10px; }.age-visual { min-height: 400px; }.age-list { grid-template-columns: 1fr; }
   .game-card { padding: 35px 18px; border-radius: 28px; }.mystery-card { min-height: 270px; width:350px}.mystery-card p { font-size: 1.25rem; }
@@ -479,9 +479,8 @@ input:focus, select:focus { border-color: var(--sky); box-shadow: 0 0 0 4px rgba
   .form-card { padding: 24px 18px; border-radius: 24px; }.form-row { grid-template-columns: 1fr; gap: 0; }
   .footer-links { grid-template-columns: 1fr 1fr; }.footer-links > div:last-child { grid-column: 1 / -1; }
   .footer-bottom { flex-direction: column; }
-  
-}
 
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
