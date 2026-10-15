@@ -120,6 +120,11 @@
       error: document.getElementById("email-error"),
       message: "Please enter a valid email."
     },
+    mobile: {
+      input: document.getElementById("mobile"),
+      error: document.getElementById("mobile-error"),
+      message: "Please enter a valid moble number."
+    },
     childAge: {
       input: document.getElementById("child-age"),
       error: document.getElementById("child-age-error"),
@@ -156,6 +161,15 @@
       fields.email.error.textContent = fields.email.message;
       valid = false;
     }
+    const mobileValue = fields.mobile.input.value.trim();
+    const mobilePattern = /^[6-9]\d{9}$/;
+    // Explanation: starts with 6–9, followed by 9 digits = total 10 digits
+
+    if (!mobilePattern.test(mobileValue)) {
+      fields.mobile.input.classList.add("input-error");
+      fields.mobile.error.textContent = fields.mobile.message;
+      valid = false;
+    }
 
     if (!fields.childAge.input.value) {
       fields.childAge.input.classList.add("input-error");
@@ -172,21 +186,98 @@
     return valid;
   }
 
-  if (form) {
-    form.addEventListener("submit", event => {
-      event.preventDefault();
+  // if (form) {
+  //   form.addEventListener("submit", event => {
+  //     event.preventDefault();
 
-      if (!validateForm()) {
-        const firstInvalid = form.querySelector(".input-error");
-        firstInvalid?.focus();
-        return;
-      }
+  //     if (!validateForm()) {
+  //       const firstInvalid = form.querySelector(".input-error");
+  //       firstInvalid?.focus();
+  //       return;
+  //     }
 
-      // Frontend-only success state for version 1.
+  //     // Frontend-only success state for version 1.
+  //     formContent.hidden = true;
+  //     successState.hidden = false;
+  //   });
+  // }
+
+  
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPMN7EMXrrwKWbvqnG7reT-mSdENzznO_M5Au4w69QNIwZOSAUoPWlLLxDpbwMOJSX/exec";
+
+if (form) {
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (!validateForm()) {
+      form.querySelector(".input-error")?.focus();
+      return;
+    }
+
+    const submitButton = form.querySelector(
+      'button[type="submit"]'
+    );
+
+    const originalButtonText = submitButton.innerHTML;
+    submitButton.disabled = true;
+    submitButton.textContent = "Joining...";
+    
+    // Collect all checked checkboxes
+    const checkboxes = document.querySelectorAll('input[name="skillType"]:checked');
+    const selectedActivities = Array.from(checkboxes).map(cb => cb.value);
+    // Get selected radio button
+    const selectedRadio = document.querySelector('input[name="activityType"]:checked');
+    const activity = selectedRadio ? selectedRadio.value : null;
+
+    const payload = {
+      parentName: fields.parentName.input.value.trim(),
+      email: fields.email.input.value.trim(),
+      childAge: fields.childAge.input.value,
+      city: fields.city.input.value.trim(),
+      mobile: fields.mobile.input.value.trim(),
+      skillType:  selectedActivities.join(","),
+      activityType: activity || ""
+    };
+
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      // no-cors hides the server response, so this is
+      // a submission attempt, not confirmation of a saved row.
       formContent.hidden = true;
       successState.hidden = false;
-    });
-  }
+
+    } catch (error) {
+      console.error("Waitlist submission failed:", error);
+
+      let errorMessage = document.getElementById(
+        "waitlist-submit-error"
+      );
+
+      if (!errorMessage) {
+        errorMessage = document.createElement("p");
+        errorMessage.id = "waitlist-submit-error";
+        errorMessage.setAttribute("role", "alert");
+        errorMessage.className = "field-error";
+        form.appendChild(errorMessage);
+      }
+
+      errorMessage.textContent =
+        "We couldn't send your details. Please try again.";
+
+    } finally {
+      submitButton.disabled = false;
+      submitButton.innerHTML = originalButtonText;
+    }
+  });
+}
 
   if (resetForm) {
     resetForm.addEventListener("click", () => {
